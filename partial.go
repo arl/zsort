@@ -127,10 +127,9 @@ func siftDown[S ~[]E, E cmp.Ordered](x S, n, start int) {
 		return
 	}
 
-	// TODO(arl) here we'll be copying 'top' for simplicity, but we shouldn't do
-	// that and use indices instead.
 	// value_type __top(_VSTD::move(*__start));
 	top := x[start]
+
 	// do
 	// {
 	for {
