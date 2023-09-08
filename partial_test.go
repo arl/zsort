@@ -3,6 +3,7 @@ package zsort_test
 import (
 	"fmt"
 	"math/rand"
+	"reflect"
 	"sort"
 	"testing"
 
@@ -30,5 +31,36 @@ func TestPartial(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestPartialNilSlice(t *testing.T) {
+	var s []int
+	zsort.Partial(s, 10)
+}
+
+func TestPartialPrecise(t *testing.T) {
+	// Precise in the sense we compare the whole slice is as expected after
+	// applying Partial to it (as opposed to TestPartial where we only test that
+	// the first 10% are sorted).
+	org := []int{10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}
+
+	for n := 0; n < 12; n++ {
+		s := make([]int, len(org))
+		copy(s, org)
+		zsort.Partial(s, n)
+
+		want := make([]int, len(org))
+		for i := range want {
+			if i < n {
+				want[i] = i
+			} else {
+				want[i] = 10 - i + n
+			}
+		}
+
+		if !reflect.DeepEqual(s, want) {
+			t.Errorf("for n = %d, got = %v, want = %v", n, s, want)
+		}
 	}
 }

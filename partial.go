@@ -10,6 +10,9 @@ import (
 // __comp should return true if the first element is less than the second
 
 func Partial[S ~[]E, E cmp.Ordered](x S, n int) {
+	if n == 0 || len(x) == 0 {
+		return
+	}
 	// __make_heap<_Compare>(__first, __middle, __comp);
 	makeHeap(x[:n])
 	// typename iterator_traits<_RandomAccessIterator>::difference_type __len = __middle - __first;
