@@ -30,11 +30,26 @@ func Partial[S ~[]E, E cmp.Ordered](x S, n int) {
 		//     }
 		// }
 	}
+
+	// Measure:
+	//  either
+	// slices.Sort(x[:n])
+	//  or:
+	// sortHeap(x[:n])
+
 	// __sort_heap<_Compare>(__first, __middle, __comp);
 	// TODO
 	// fmt.Println(x[:n])
-	sortHeap(x[:n])
-	// slices.Sort(x[:n])
+
+	// sortHeap(x[:n])
+
+	// This is the inlined version of sortHeap(x[:n])
+	for i := n; i > 1; n, i = n-1, i-1 {
+		if i > 1 {
+			x[0], x[n-1] = x[n-1], x[0]
+			siftDown(x[:n-1], i-1, 0)
+		}
+	}
 }
 
 // void
