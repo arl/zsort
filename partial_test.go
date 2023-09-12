@@ -2,6 +2,7 @@ package zsort_test
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"reflect"
 	"sort"
@@ -62,6 +63,40 @@ func TestPartialPrecise(t *testing.T) {
 		if !reflect.DeepEqual(s, want) {
 			t.Errorf("for n = %d, got = %v, want = %v", n, s, want)
 		}
+	}
+}
+
+var ints = [...]int{74, 59, 238, -784, 9845, 959, 905, 0, 0, 42, 7586, -5467984, 7586}
+var float64s = [...]float64{74.3, 59.0, math.Inf(1), 238.2, -784.0, 2.3, math.NaN(), math.NaN(), math.Inf(-1), 9845.768, -959.7485, 905, 7.8, 7.8}
+var strings = [...]string{"", "Hello", "foo", "bar", "foo", "f00", "%*&^*&^&", "***"}
+
+func TestPartialInts(t *testing.T) {
+	data := ints
+	const n = 5
+	zsort.Partial(data[:], n)
+	if !sort.IntsAreSorted(data[:n]) {
+		t.Errorf("sorted %v", ints)
+		t.Errorf("   got %v", data)
+	}
+}
+
+func TestPartialFloat64s(t *testing.T) {
+	data := float64s
+	const n = 5
+	zsort.Partial(data[:], n)
+	if !sort.Float64sAreSorted(data[:n]) {
+		t.Errorf("sorted %v", float64s)
+		t.Errorf("   got %v", data)
+	}
+}
+
+func TestStrings(t *testing.T) {
+	data := strings
+	const n = 5
+	zsort.Partial(data[:], n)
+	if !sort.StringsAreSorted(data[:n]) {
+		t.Errorf("sorted %v", strings)
+		t.Errorf("   got %v", data)
 	}
 }
 
