@@ -185,13 +185,10 @@ func siftDown[S ~[]E, E cmp.Ordered](x S, n, start int) {
 		// // check if we are in heap-order
 		// } while (!__comp(*__child_i, __top));
 
-		// TODO(arl) improve stop condition readability
-
-		// check if we are in heap-order
-		if x[ichild] >= top {
-			continue
+		// Check if we are in heap-order
+		if x[ichild] < top {
+			break
 		}
-		break
 	}
 
 	// *__start = _VSTD::move(__top);
