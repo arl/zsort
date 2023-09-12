@@ -40,7 +40,7 @@ func TestPartialNilSlice(t *testing.T) {
 }
 
 func TestPartialPrecise(t *testing.T) {
-	// Precise in the sense we compare the whole slice is as expected after
+	// Precise in the sense we verify the whole slice is as expected after
 	// applying Partial to it (as opposed to TestPartial where we only test that
 	// the first 10% are sorted).
 	org := []int{10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}
@@ -62,5 +62,57 @@ func TestPartialPrecise(t *testing.T) {
 		if !reflect.DeepEqual(s, want) {
 			t.Errorf("for n = %d, got = %v, want = %v", n, s, want)
 		}
+	}
+}
+
+func BenchmarkPartialInt1K(b *testing.B) {
+	b.StopTimer()
+	for i := 0; i < b.N; i++ {
+		data := make([]int, 1<<10)
+		for i := 0; i < len(data); i++ {
+			data[i] = i ^ 0x2cc
+		}
+		b.StartTimer()
+		zsort.Partial(data, 10)
+		b.StopTimer()
+	}
+}
+
+func BenchmarkPartialInt1K_Sorted(b *testing.B) {
+	b.StopTimer()
+	for i := 0; i < b.N; i++ {
+		data := make([]int, 1<<10)
+		for i := 0; i < len(data); i++ {
+			data[i] = i
+		}
+		b.StartTimer()
+		zsort.Partial(data, 10)
+		b.StopTimer()
+	}
+}
+
+func BenchmarkPartialInt1K_Reversed(b *testing.B) {
+	b.StopTimer()
+	for i := 0; i < b.N; i++ {
+		data := make([]int, 1<<10)
+		for i := 0; i < len(data); i++ {
+			data[i] = len(data) - i
+		}
+		b.StartTimer()
+		zsort.Partial(data, 10)
+		b.StopTimer()
+	}
+}
+
+func BenchmarkPartialInt1K_Mod8(b *testing.B) {
+	b.StopTimer()
+	for i := 0; i < b.N; i++ {
+		data := make([]int, 1<<10)
+		for i := 0; i < len(data); i++ {
+			data[i] = i % 8
+		}
+		b.StartTimer()
+		zsort.Partial(data, 10)
+		b.StopTimer()
 	}
 }
