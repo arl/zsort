@@ -1,56 +1,54 @@
 package zsort
 
-import (
-	"cmp"
-)
+import "cmp"
 
-func Partial[S ~[]E, E cmp.Ordered](x S, n int) {
+func PartialFunc[S ~[]E, E cmp.Ordered](x S, n int, less func(E, E) bool) {
 	if n == 0 || len(x) == 0 {
 		return
 	}
 
-	makeHeap(x[:n])
+	makeHeap_func(x[:n], less)
 
 	for i := n; i < len(x); i++ {
 		if x[i] < x[0] {
 			x[i], x[0] = x[0], x[i]
-			siftDown(x[:n], n, 0)
+			siftDown_func(x[:n], n, 0, less)
 		}
 	}
 
 	for i := n; i > 1; n, i = n-1, i-1 {
 		if i > 1 {
 			x[0], x[n-1] = x[n-1], x[0]
-			siftDown(x[:n-1], i-1, 0)
+			siftDown_func(x[:n-1], i-1, 0, less)
 		}
 	}
 }
 
-func makeHeap[S ~[]E, E cmp.Ordered](x S) {
+func makeHeap_func[S ~[]E, E any](x S, less func(E, E) bool) {
 	n := len(x)
 	if n > 1 {
 		// Start from the first parent, there is no need to consider children.
 		for start := (n - 2) / 2; start >= 0; start-- {
-			siftDown(x, n, start)
+			siftDown_func(x, n, start, less)
 		}
 	}
 }
 
-func sortHeap[S ~[]E, E cmp.Ordered](x S) {
+func sortHeap_func[S ~[]E, E any](x S, less func(E, E) bool) {
 	last := len(x)
 	for n := last; n > 1; last, n = last-1, n-1 {
-		popHeap(x[:last], n)
+		popHeap_func(x[:last], n, less)
 	}
 }
 
-func popHeap[S ~[]E, E cmp.Ordered](x S, n int) {
+func popHeap_func[S ~[]E, E any](x S, n int, less func(E, E) bool) {
 	if n > 1 {
 		x[0], x[len(x)-1] = x[len(x)-1], x[0]
-		siftDown(x[:len(x)-1], n-1, 0)
+		siftDown_func(x[:len(x)-1], n-1, 0, less)
 	}
 }
 
-func siftDown[S ~[]E, E cmp.Ordered](x S, n, start int) {
+func siftDown_func[S ~[]E, E any](x S, n, start int, less func(E, E) bool) {
 	// left-child of __start is at 2 * __start + 1
 	// right-child of __start is at 2 * __start + 2
 	child := start
@@ -62,14 +60,14 @@ func siftDown[S ~[]E, E cmp.Ordered](x S, n, start int) {
 	child = 2*child + 1
 	ichild := child
 
-	if (child+1) < n && x[ichild] < x[ichild+1] {
+	if (child+1) < n && less(x[ichild], x[ichild+1]) {
 		// Right-child exists and is greater than left-child.
 		ichild++
 		child++
 	}
 
-	// Check if we are in heap-order.
-	if x[ichild] < x[start] {
+	// Check if we are in heap-order
+	if less(x[ichild], x[start]) {
 		// We are, x[0] is larger than its largest child.
 		return
 	}
@@ -89,14 +87,14 @@ func siftDown[S ~[]E, E cmp.Ordered](x S, n, start int) {
 		child = 2*child + 1
 		ichild = child
 
-		if (child+1) < n && x[ichild] < x[ichild+1] {
+		if (child+1) < n && less(x[ichild], x[ichild+1]) {
 			// Right-child exists and is greater than left-child.
 			ichild++
 			child++
 		}
 
 		// Check if we are in heap-order
-		if x[ichild] < top {
+		if less(x[ichild], top) {
 			break
 		}
 	}
