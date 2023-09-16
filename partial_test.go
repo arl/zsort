@@ -90,7 +90,7 @@ func TestPartialFloat64s(t *testing.T) {
 	}
 }
 
-func TestStrings(t *testing.T) {
+func TestPartialStrings(t *testing.T) {
 	data := strings
 	const n = 5
 	zsort.Partial(data[:], n)

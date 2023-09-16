@@ -1,8 +1,6 @@
 package zsort
 
-import (
-	"cmp"
-)
+import "cmp"
 
 func Partial[S ~[]E, E cmp.Ordered](x S, n int) {
 	if n == 0 || len(x) == 0 {
