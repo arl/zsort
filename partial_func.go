@@ -1,8 +1,13 @@
 package zsort
 
-import "cmp"
-
-func PartialFunc[S ~[]E, E cmp.Ordered](x S, n int, less func(E, E) bool) {
+// PartialFunc sorts the first n elements of x, such that they are the smallest
+// n elements, given the provided less function. The remaining elements in the
+// slice are not sorted but are guaranteed to be greater than or equal to the
+// elements in the first n positions.
+//
+// x is sorted in-place. The sort is not guaranteed to be stable: equal elements
+// may be reversed from their original order
+func PartialFunc[S ~[]E, E any](x S, n int, less func(E, E) bool) {
 	if n == 0 || len(x) == 0 {
 		return
 	}
@@ -10,7 +15,7 @@ func PartialFunc[S ~[]E, E cmp.Ordered](x S, n int, less func(E, E) bool) {
 	makeHeap_func(x[:n], less)
 
 	for i := n; i < len(x); i++ {
-		if x[i] < x[0] {
+		if less(x[i], x[0]) {
 			x[i], x[0] = x[0], x[i]
 			siftDown_func(x[:n], n, 0, less)
 		}

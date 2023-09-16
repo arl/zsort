@@ -100,6 +100,16 @@ func TestPartialStrings(t *testing.T) {
 	}
 }
 
+func TestPartialFuncStrings(t *testing.T) {
+	data := strings
+	const n = 5
+	zsort.PartialFunc(data[:], n, func(s1, s2 string) bool { return s1 < s2 })
+	if !sort.StringsAreSorted(data[:n]) {
+		t.Errorf("sorted %v", strings)
+		t.Errorf("   got %v", data)
+	}
+}
+
 func BenchmarkPartialInt1K(b *testing.B) {
 	b.StopTimer()
 	for i := 0; i < b.N; i++ {
@@ -109,6 +119,19 @@ func BenchmarkPartialInt1K(b *testing.B) {
 		}
 		b.StartTimer()
 		zsort.Partial(data, 10)
+		b.StopTimer()
+	}
+}
+
+func BenchmarkPartialFuncInt1K(b *testing.B) {
+	b.StopTimer()
+	for i := 0; i < b.N; i++ {
+		data := make([]int, 1<<10)
+		for i := 0; i < len(data); i++ {
+			data[i] = i ^ 0x2cc
+		}
+		b.StartTimer()
+		zsort.PartialFunc(data, 10, func(e1, e2 int) bool { return e1 < e2 })
 		b.StopTimer()
 	}
 }

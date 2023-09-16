@@ -2,6 +2,13 @@ package zsort
 
 import "cmp"
 
+// Partial sorts the first n elements of x, such that they are the smallest n
+// elements in ascending order, using the type's natural ordering. The remaining
+// elements in the slice are not sorted but are guaranteed to be greater than or
+// equal to the elements in the first n positions.
+//
+// x is sorted in-place. The sort is not guaranteed to be stable: equal elements
+// may be reversed from their original order
 func Partial[S ~[]E, E cmp.Ordered](x S, n int) {
 	if n == 0 || len(x) == 0 {
 		return
